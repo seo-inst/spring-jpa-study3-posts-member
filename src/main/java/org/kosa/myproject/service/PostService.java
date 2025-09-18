@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kosa.myproject.dto.PostCreateRequestDto;
 import org.kosa.myproject.dto.PostDetailResponseDto;
+import org.kosa.myproject.dto.PostListResponseDto;
 import org.kosa.myproject.entity.Member;
 import org.kosa.myproject.entity.Post;
 import org.kosa.myproject.repository.MemberRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,7 +59,20 @@ public class PostService {
         }
         log.info("N번의 쿼리 실행=> 성능 저하");
     }
+    /**
+     *    N + 1 문제 해결
+     *    JPQL Fetch Join 으로 한번의 SQL 로 조회
+     *    -> N 번의 쿼리가  단 1번으로 줄어 성능이 크게 향상
+     */
+    public List<PostListResponseDto> findAllPostList(){
+        List<Post> posts =  postRepository.findAllWithMember();// JPQL Fetch JOIN 적용된 repository 메서드 호출
+        return posts.stream().map(PostListResponseDto::from).collect(Collectors.toUnmodifiableList());
+    }
 }
+
+
+
+
 
 
 

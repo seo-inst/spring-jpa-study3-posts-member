@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kosa.myproject.dto.PostCreateRequestDto;
 import org.kosa.myproject.dto.PostDetailResponseDto;
+import org.kosa.myproject.dto.PostListResponseDto;
 import org.kosa.myproject.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  *  Post Rest Controller
@@ -31,6 +34,14 @@ public class PostController {
     public ResponseEntity<String> demonstrateNPlusOne(){
         postService.demonstrateNPlusOneProblem();
         return ResponseEntity.ok("콘솔 로그 확인하세요");
+    }
+    /**
+     *  전체 게시물 조회 ( N + 1 문제 해결 ) => JPQL FETCH JOIN 으로 해결 -> 1 번의 쿼리로 처리
+     */
+    @GetMapping
+    public ResponseEntity<List<PostListResponseDto>> findAllPostList(){
+        List<PostListResponseDto>  posts = postService.findAllPostList();
+        return ResponseEntity.ok(posts);
     }
 }
 
