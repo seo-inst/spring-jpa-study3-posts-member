@@ -11,6 +11,8 @@ import org.kosa.myproject.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -35,6 +37,25 @@ public class PostService {
         // db 에 저장
         Post savedPost =  postRepository.save(post);// save 가 반환하는 Post Entity 에는 자동 생성된 postId 와  생성일시createdAt가 할당되어 있음
         return PostDetailResponseDto.from(savedPost);// Dto로 변환하여 컨트롤러에 반환한다
+    }
+    /**
+     *   게시물 전체 조회 -> N + 1 문제 발생 버전 ( 학습을 위해 )
+     *   N + 1 문제는 연관 관계가 있는 엔티티를 조회할 때 발생하는 성능 문제
+     *   회원 100명이 작성한 게시물 100 개를 조회할 때
+     *   1번의 쿼리로 게시물 리스트를 가져오고
+     *   각 게시물에 연결된 회원 정보를 가져오기 위해 100번의 추가 쿼리가 발생되는 상황을 말함
+     *   ==> 성능 저하가 초래 ==해결==> JPQL 의 Fetch Join 을 해결함
+     */
+    public void demonstrateNPlusOneProblem(){
+        log.info("====N + 1 문제 발생 시연====");
+        // 1 번 쿼리 : Select * FROM posts
+        List<Post> posts =  postRepository.findAll(); // JpaRepository 에 기본 제공되는 메서드를 이용한다
+        log.info("1번 쿼리 실행:{} 개의 게시물 조회",posts.size());
+        for(Post post : posts){
+            String authorName = post.getMember().getUsername();
+            log.info("추가 쿼리! 게시물 : {} 작성자 : {}",post.getTitle(),authorName);
+        }
+        log.info("N번의 쿼리 실행=> 성능 저하");
     }
 }
 

@@ -7,10 +7,7 @@ import org.kosa.myproject.dto.PostDetailResponseDto;
 import org.kosa.myproject.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *  Post Rest Controller
@@ -29,6 +26,11 @@ public class PostController {
     public ResponseEntity<PostDetailResponseDto> createPost(@RequestBody PostCreateRequestDto postCreateRequestDto){
        PostDetailResponseDto postDetailResponseDto =  postService.createPost(postCreateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(postDetailResponseDto);
+    }
+    @GetMapping("/demo/n-plus-one")
+    public ResponseEntity<String> demonstrateNPlusOne(){
+        postService.demonstrateNPlusOneProblem();
+        return ResponseEntity.ok("콘솔 로그 확인하세요");
     }
 }
 
