@@ -68,6 +68,25 @@ public class PostService {
         List<Post> posts =  postRepository.findAllWithMember();// JPQL Fetch JOIN 적용된 repository 메서드 호출
         return posts.stream().map(PostListResponseDto::from).collect(Collectors.toUnmodifiableList());
     }
+    /**
+     *  상세 게시물 조회 - JPQL Fetch JOIN 이용한 메서드 사용
+     */
+    public PostDetailResponseDto findPostDetail(Long postId){
+        log.info("게시물 상세 조회: postId {}",postId);
+        Post post = postRepository.findByIdWithMember(postId).orElseThrow(()->new RuntimeException("게시물을 찾을 수 없습니다 postId="+postId));
+        return PostDetailResponseDto.from(post);// Dto 로 변환하여 반환
+    }
+    /**
+     *  특정 회원의 게시물 목록 조회 : @ManyToOne 으로 모두 가능
+     */
+    public List<PostListResponseDto> findPostListByMember(Long memberId){
+        if(!memberRepository.existsById(memberId)){
+            throw new RuntimeException("회원을 찾을 수 없습니다 memberId"+memberId);
+        }
+        List<Post> posts=postRepository.findPostListByMemberId(memberId);
+        // stream(), map() 으로 Entity List 를 Dto List 로 변환
+        return posts.stream().map(PostListResponseDto::from).collect(Collectors.toUnmodifiableList());
+    }
 }
 
 

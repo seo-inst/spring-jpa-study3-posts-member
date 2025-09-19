@@ -3,9 +3,11 @@ package org.kosa.myproject.repository;
 import org.kosa.myproject.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long> {
@@ -22,4 +24,29 @@ public interface PostRepository extends JpaRepository<Post,Long> {
      */
       @Query("SELECT p FROM Post p JOIN FETCH p.member ")
     List<Post> findAllWithMember();
-}
+    /**
+     *  특정 상세 게시물 조회  ( 작성자 (회원 ) 정보 포함 )
+     *  JPQL FETCH JOIN 을 이용해 게시물 조회시 작성자 정보도 함께 조회
+     */
+    @Query("SELECT p FROM Post p JOIN FETCH p.member WHERE p.postId = :postId")
+    Optional<Post> findByIdWithMember(@Param("postId") Long postId);
+    /**
+     *  특정 회원의 게시물 목록 조회
+     *  JPQL FETCH JOIN 을 이용
+     */
+    @Query("SELECT p FROM Post p JOIN FETCH p.member WHERE p.member.memberId = :memberId")
+    List<Post> findPostListByMemberId(@Param("memberId") Long memberId);
+}g
+
+
+
+
+
+
+
+
+
+
+
+
+

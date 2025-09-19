@@ -43,7 +43,34 @@ public class PostController {
         List<PostListResponseDto>  posts = postService.findAllPostList();
         return ResponseEntity.ok(posts);
     }
+    /**
+     *  상세 게시물 조회 - JPQL FETCH JOIN
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDetailResponseDto> findPostDetail(@PathVariable Long id){
+        PostDetailResponseDto postDetailResponseDto =  postService.findPostDetail(id);
+        return ResponseEntity.ok(postDetailResponseDto);
+    }
+    /*
+        특정 회원의 게시물 조회
+     */
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<PostListResponseDto>> findPostListByMember(@PathVariable Long memberId){
+        List<PostListResponseDto> posts =  postService.findPostListByMember(memberId);
+        return ResponseEntity.ok(posts);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
